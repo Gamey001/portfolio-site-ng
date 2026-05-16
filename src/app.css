@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --ink: #0a0a0a;
+  --ink-2: #111111;
+  --bone: #f4f1ea;
+  --bone-2: #d8d2c4;
+  --muted: #8a8479;
+  --accent: #ff4d2e;
+  --accent-2: #7c5cff;
+  --accent-3: #19e6a0;
+  --line: rgba(244, 241, 234, 0.12);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --ink: #f4f1ea;
+  --ink-2: #ebe6da;
+  --bone: #0a0a0a;
+  --bone-2: #1a1a1a;
+  --muted: #50493e;
+  --line: rgba(10, 10, 10, 0.14);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background: var(--ink);
+  color: var(--bone);
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+  overflow-x: hidden;
+}
+
+/* Hide the native cursor in favor of our custom one — only on fine pointers. */
+@media (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.75rem 1rem;
+  background: var(--bone);
+  color: var(--ink);
+  font-weight: 600;
+  z-index: 9999;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  outline: 2px solid var(--accent);
+}
+
+/* Focus rings: visible only when needed */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Layered overlays sit above the page but below modals. */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.fx-noise {
+  z-index: 70;
+  mix-blend-mode: overlay;
+  opacity: 0.25;
+}
+
+.fx-cursor {
+  z-index: 80;
+}
+
+/* Reduced motion: disable heavy animations but keep structure intact. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fx-noise {
+    display: none;
+  }
+}
+
+/* Display headings */
+.h-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+}
+
+.eyebrow {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  width: 100%;
+}
+
+/* Section utilities */
+.section {
+  position: relative;
+  padding: clamp(4.5rem, 9vw, 8.5rem) clamp(1.25rem, 4vw, 3.5rem);
+  max-width: 1480px;
+  margin-inline: auto;
+}
+
+/* Button primitives */
+.btn {
+  --bg: var(--bone);
+  --fg: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 1.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid transparent;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease, color 0.3s ease;
+  will-change: transform;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+.btn--ghost {
+  --bg: transparent;
+  --fg: var(--bone);
+  border-color: var(--line);
+}
+.btn--ghost:hover {
+  border-color: var(--bone);
+}
+
+/* Magnetic interactive primitives - signal via data attribute for the cursor */
+[data-cursor='magnet'],
+[data-cursor='link'] {
+  position: relative;
+}
+
+/* Marquee strip */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+/* Subtle vignette to deepen edges */
+.vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Project card hover */
+.project-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+}
+.project-card:hover {
+  border-color: rgba(244, 241, 234, 0.32);
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 77, 46, 0.18), transparent 40%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.project-card:hover::before {
+  opacity: 1;
+}
