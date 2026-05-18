@@ -6,15 +6,51 @@ export type SkillGroup = {
 export const skillGroups: SkillGroup[] = [
   {
     heading: 'Frontend',
-    items: ['React', 'TypeScript', 'JavaScript / ES6', 'HTML5 + CSS3', 'SASS', 'jQuery', 'Bootstrap', 'TailwindCSS']
+    items: [
+      'React',
+      'TypeScript',
+      'Material UI',
+      'TailwindCSS',
+      'Bootstrap',
+      'Formik · Yup',
+      'react-intl (i18n)',
+      'Responsive Design'
+    ]
   },
   {
     heading: 'Backend',
-    items: ['Node.js / Express', 'Java', 'Spring Boot', 'PHP', 'MySQL', 'MongoDB', 'REST + SOAP APIs']
+    items: [
+      'Java · Spring Boot · Spring Web · JPA',
+      'Node.js / Express',
+      'Python / Django',
+      'Ruby on Rails',
+      'PHP · MySQL',
+      'MongoDB',
+      'RESTful APIs',
+      'OAuth2 · OpenID Connect'
+    ]
   },
   {
-    heading: 'Tooling',
-    items: ['Git / GitHub / GitLab', 'AWS', 'Figma', 'Adobe XD', 'AJAX', 'JSON / XML']
+    heading: 'DevOps & Tooling',
+    items: [
+      'Git · GitHub · GitLab',
+      'CI/CD workflows',
+      'Docker',
+      'Webpack · npm · yarn',
+      'AWS',
+      'Performance tuning',
+      'Deployment automation'
+    ]
+  },
+  {
+    heading: 'Quality & Design',
+    items: [
+      'Unit & regression testing',
+      'Code reviews',
+      'Linting & style enforcement',
+      'Figma',
+      'Adobe XD'
+    ]
   },
   {
     heading: 'Off the keyboard',
@@ -24,9 +60,9 @@ export const skillGroups: SkillGroup[] = [
 
 export const profile = {
   name: 'Gamaliel Dashua',
-  role: 'Frontend Engineer · Full-stack-curious',
+  role: 'Full-Stack Developer · Java/Spring Boot · React/TypeScript',
   blurb:
-    'I build immersive, performant interfaces — from end-to-end encrypted clients to offline-first dashboards. BSc Computer Science.',
+    'Full-stack developer with 4+ years of production experience — 2 of them in Java/Spring Boot backends. I design and consume reliable APIs, build polished React/TypeScript front ends, and ship the lot end to end.',
   email: 'gdashua@gmail.com',
   phone: '+234 806 837 7631',
   github: 'https://github.com/Gamey001',

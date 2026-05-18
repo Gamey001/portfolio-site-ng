@@ -9,20 +9,22 @@
   const marqueeItems = [
     'React',
     'TypeScript',
-    'SvelteKit',
+    'Java',
     'Spring Boot',
-    'Web Crypto',
+    'Node.js',
+    'Django',
     'AWS',
+    'Docker',
     'MongoDB',
-    'Figma'
+    'REST APIs'
   ];
 </script>
 
 <svelte:head>
-  <title>Gamaliel Dashua — Frontend Engineer</title>
-  <meta name="description" content="Gamaliel Dashua — Frontend engineer building immersive, performant interfaces. React, TypeScript, Svelte, Java/Spring Boot." />
-  <meta property="og:title" content="Gamaliel Dashua — Frontend Engineer" />
-  <meta property="og:description" content="Immersive, performant frontend work. End-to-end encrypted clients, offline-first dashboards, design-led product surfaces." />
+  <title>Gamaliel Dashua — Full-Stack Developer</title>
+  <meta name="description" content="Gamaliel Dashua — Full-stack developer shipping production software across React/TypeScript, Java/Spring Boot, Node, and Python." />
+  <meta property="og:title" content="Gamaliel Dashua — Full-Stack Developer" />
+  <meta property="og:description" content="Full-stack developer with 4+ years across React/TypeScript and Java/Spring Boot. End-to-end encrypted clients, offline-first dashboards, EMR systems." />
   <meta property="og:type" content="website" />
 </svelte:head>
 

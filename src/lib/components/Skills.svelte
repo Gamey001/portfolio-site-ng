@@ -12,9 +12,9 @@
           What I bring<br />to the kit.
         </h2>
         <p class="mt-6 max-w-sm text-[var(--bone-2)]">
-          Years of building production interfaces — from React/TypeScript on the front
-          to Java/Spring Boot, Node, and MongoDB on the back. Comfortable across the stack,
-          most at home in the browser.
+          Four years building production software across the stack — React/TypeScript
+          and Material UI on the front; Java/Spring Boot, Node/Express, Django, and
+          MongoDB on the back. RESTful APIs, OAuth2, CI/CD, and AWS in between.
         </p>
       </Reveal>
     </div>

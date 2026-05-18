@@ -109,7 +109,7 @@
   });
 
   // simple title splitter for staggered reveal
-  const title = 'engineer of interfaces.';
+  const title = 'full-stack by craft.';
   const words = title.split(' ');
 </script>
 
@@ -119,19 +119,20 @@
   class="relative min-h-screen overflow-hidden vignette"
   aria-label="Intro"
 >
-  <!-- Clean gradient mesh background (no busy photo) -->
+  <!-- Modern violet/purple/white mesh gradient background -->
   <div class="absolute inset-0 z-0" aria-hidden="true">
     <div
       class="absolute inset-0"
       style="background:
-        radial-gradient(60% 80% at 20% 30%, rgba(124,92,255,0.22), transparent 65%),
-        radial-gradient(50% 70% at 80% 70%, rgba(255,77,46,0.18), transparent 65%),
-        radial-gradient(45% 60% at 60% 20%, rgba(25,230,160,0.10), transparent 65%),
-        linear-gradient(180deg, #0a0a0a 0%, #0c0a14 55%, #050505 100%);"
+        radial-gradient(70% 90% at 18% 22%, rgba(196,181,253,0.55), transparent 65%),
+        radial-gradient(60% 80% at 82% 78%, rgba(124,58,237,0.55), transparent 60%),
+        radial-gradient(55% 70% at 65% 18%, rgba(255,255,255,0.18), transparent 65%),
+        radial-gradient(80% 100% at 50% 110%, rgba(76,29,149,0.65), transparent 70%),
+        linear-gradient(160deg, #1a0b2e 0%, #2d1b69 45%, #4c1d95 100%);"
     ></div>
     <!-- Faint vertical rule grid to add structure without noise -->
     <div
-      class="absolute inset-0 opacity-[0.06]"
+      class="absolute inset-0 opacity-[0.05]"
       style="background-image: linear-gradient(to right, #fff 1px, transparent 1px); background-size: 8.333% 100%;"
     ></div>
   </div>
@@ -145,7 +146,7 @@
         class:opacity-0={!mounted}
         style="animation: fadeUp 0.7s 0.05s cubic-bezier(0.22,1,0.36,1) both;"
       >
-        Gamaliel Dashua · Frontend Engineer · Nigeria
+        Gamaliel Dashua · Full-Stack Developer · Nigeria
       </p>
 
       <h1 class="h-display text-[clamp(3.4rem,9vw,8.5rem)]">
@@ -168,9 +169,10 @@
         class="mt-8 max-w-xl text-base text-[var(--bone-2)] sm:text-lg"
         style="animation: fadeUp 1s 0.55s cubic-bezier(0.22,1,0.36,1) both;"
       >
-        I'm <span class="text-bone">Gamaliel</span> — I build immersive, performant
-        web experiences. From end-to-end encrypted messaging to offline-first dashboards,
-        I care about every frame, every focus state, every byte.
+        I'm <span class="text-bone">Gamaliel</span> — a full-stack developer with 4+
+        years shipping production software. React &amp; TypeScript on the front,
+        Java/Spring Boot, Node, and Python on the back. I design APIs, sweat the
+        pixels, and care about every frame, focus state, and byte in between.
       </p>
 
       <div
@@ -213,7 +215,7 @@
 
         <!-- Diagonal label strip behind subject's shoulder -->
         <div class="poster__strip" aria-hidden="true">
-          FRONTEND · ENGINEER · FRONTEND · ENGINEER ·
+          FULL-STACK · DEVELOPER · FULL-STACK · DEVELOPER ·
         </div>
 
         <!-- Corner crop marks -->
@@ -248,7 +250,7 @@
     <!-- Bottom strip -->
     <div class="col-span-12 mt-auto flex items-end justify-between border-t border-white/10 pt-4">
       <div class="font-mono text-[11px] uppercase tracking-[0.22em] text-white/55">
-        <span class="text-[var(--accent)]">●</span> Open to senior frontend roles
+        <span class="text-[var(--accent)]">●</span> Open to senior full-stack roles
       </div>
       <a href="#about" class="font-mono text-[11px] uppercase tracking-[0.22em] text-white/55 hover:text-white" aria-label="Scroll to next section">
         Scroll ↓
@@ -266,20 +268,20 @@
       0 0 0 1px rgba(255, 255, 255, 0.06);
   }
 
-  /* Solid color "paper" — warm coral panel inspired by editorial print */
+  /* Modern violet → purple → white paper, editorial gradient */
   .poster__paper {
     position: absolute;
     inset: 0;
     z-index: 0;
     background:
-      radial-gradient(120% 80% at 20% 0%, #ff7a5c 0%, #ff4d2e 45%, #d63a1c 100%);
+      radial-gradient(120% 90% at 15% 0%, #ffffff 0%, #ddd6fe 18%, #a78bfa 42%, #7c3aed 70%, #4c1d95 100%);
   }
   .poster__sheen {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(60% 50% at 80% 10%, rgba(255, 255, 255, 0.28), transparent 60%),
-      radial-gradient(50% 40% at 10% 90%, rgba(0, 0, 0, 0.22), transparent 60%);
+      radial-gradient(60% 50% at 80% 10%, rgba(255, 255, 255, 0.35), transparent 60%),
+      radial-gradient(55% 45% at 10% 95%, rgba(46, 16, 101, 0.45), transparent 60%);
     mix-blend-mode: overlay;
   }
   .poster__grain {
