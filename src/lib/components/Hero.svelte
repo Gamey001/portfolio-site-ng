@@ -359,7 +359,7 @@
     <!-- Bottom strip -->
     <div class="col-span-12 mt-auto flex items-end justify-between border-t pt-4" style="border-color: var(--hero-rule);">
       <div class="font-mono text-[11px] uppercase tracking-[0.22em]" style="color: var(--hero-muted);">
-        <span class="text-[var(--accent)]">●</span> Open to Any WEB Developer roles
+        <span class="text-[var(--accent)]">●</span> Open to Any WEB Developer role
       </div>
       <a href="#about" class="font-mono text-[11px] uppercase tracking-[0.22em] hover:opacity-100" style="color: var(--hero-muted);" aria-label="Scroll to next section">
         Scroll ↓
