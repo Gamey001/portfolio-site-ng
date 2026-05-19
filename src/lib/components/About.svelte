@@ -39,7 +39,7 @@
           </div>
           <div>
             <dt class="eyebrow mb-2">Open to</dt>
-            <dd>Senior full-stack roles</dd>
+            <dd>WEB Developer Roles</dd>
           </div>
           <div>
             <dt class="eyebrow mb-2">Stack favourite</dt>
