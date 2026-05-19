@@ -393,16 +393,17 @@
       radial-gradient(70% 90% at 50% 110%, rgba(76, 29, 149, 0.55), transparent 70%),
       linear-gradient(160deg, #0b0617 0%, #1a0b2e 40%, #2d1b69 100%);
   }
-  /* Editorial portrait — sits in the background layer, never covers content */
+  /* Editorial portrait — sits in the background layer, never covers content.
+     On desktop the left edge aligns roughly with the Contact nav link (~50% vw). */
   .hero-portrait {
     position: absolute;
     bottom: 0;
-    right: -6%;
+    left: 50%;
     height: 92%;
     width: auto;
-    max-width: 55%;
+    max-width: 50%;
     object-fit: contain;
-    object-position: bottom right;
+    object-position: bottom left;
     opacity: 0.18;
     filter: grayscale(1) contrast(1.05);
     mix-blend-mode: luminosity;
@@ -410,9 +411,9 @@
     user-select: none;
     -webkit-user-select: none;
     mask-image: linear-gradient(to top, black 35%, transparent 96%),
-                linear-gradient(to left, black 60%, transparent 100%);
+                linear-gradient(to right, black 70%, transparent 100%);
     -webkit-mask-image: linear-gradient(to top, black 35%, transparent 96%),
-                        linear-gradient(to left, black 60%, transparent 100%);
+                        linear-gradient(to right, black 70%, transparent 100%);
     mask-composite: intersect;
     -webkit-mask-composite: source-in;
   }
@@ -420,11 +421,22 @@
     opacity: 0.22;
     mix-blend-mode: multiply;
   }
+  /* Below lg (1024px) the hero stacks single-column — re-anchor so the photo
+     stays visible without crowding the headline or the 3D scene. */
   @media (max-width: 1023px) {
     .hero-portrait {
+      left: 30%;
       height: 55%;
-      max-width: 75%;
+      max-width: 70%;
       opacity: 0.12;
+    }
+  }
+  @media (max-width: 640px) {
+    .hero-portrait {
+      left: 22%;
+      height: 48%;
+      max-width: 80%;
+      opacity: 0.1;
     }
   }
 
