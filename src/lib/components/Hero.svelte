@@ -394,11 +394,12 @@
       linear-gradient(160deg, #0b0617 0%, #1a0b2e 40%, #2d1b69 100%);
   }
   /* Editorial portrait — sits in the background layer, never covers content.
-     On desktop the left edge aligns roughly with the Contact nav link (~50% vw). */
+     Slid leftward enough to bring the face fully into view without crowding
+     the headline column on the left. */
   .hero-portrait {
     position: absolute;
     bottom: 0;
-    left: 50%;
+    left: 38%;
     height: 92%;
     width: auto;
     max-width: 50%;
@@ -410,10 +411,12 @@
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
-    mask-image: linear-gradient(to top, black 35%, transparent 96%),
-                linear-gradient(to right, black 70%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to top, black 35%, transparent 96%),
-                        linear-gradient(to right, black 70%, transparent 100%);
+    /* Fade only the very top edge (above the head) so the face stays fully
+       opaque; soften the right edge so it doesn't fight the 3D scene. */
+    mask-image: linear-gradient(to top, black 90%, transparent 100%),
+                linear-gradient(to right, black 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 90%, transparent 100%),
+                        linear-gradient(to right, black 75%, transparent 100%);
     mask-composite: intersect;
     -webkit-mask-composite: source-in;
   }
@@ -425,7 +428,7 @@
      stays visible without crowding the headline or the 3D scene. */
   @media (max-width: 1023px) {
     .hero-portrait {
-      left: 30%;
+      left: 22%;
       height: 55%;
       max-width: 70%;
       opacity: 0.12;
@@ -433,7 +436,7 @@
   }
   @media (max-width: 640px) {
     .hero-portrait {
-      left: 22%;
+      left: 15%;
       height: 48%;
       max-width: 80%;
       opacity: 0.1;
