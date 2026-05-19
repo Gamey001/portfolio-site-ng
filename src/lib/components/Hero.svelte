@@ -249,6 +249,13 @@
   <!-- Refined background: aurora mesh + soft grid -->
   <div class="absolute inset-0 z-0" aria-hidden="true">
     <div class="hero-bg absolute inset-0"></div>
+    <img
+      src="/images/gamaliel-cutout.png"
+      alt=""
+      class="hero-portrait"
+      loading="eager"
+      decoding="async"
+    />
     <div class="hero-grid absolute inset-0"></div>
     <div class="hero-vignette absolute inset-0"></div>
   </div>
@@ -305,9 +312,11 @@
         <a
           class="btn btn--ghost"
           data-cursor="magnet"
-          href="/Gamaliel_Dashua_CV.docx"
-          download="Gamaliel_Dashua_CV.docx"
-          aria-label="Download resume (DOCX)"
+          href="/resume.pdf"
+          download="Gamaliel_Dashua_Resume.pdf"
+          target="_blank"
+          rel="noopener"
+          aria-label="Download resume (PDF)"
         >
           Resume
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
@@ -384,6 +393,41 @@
       radial-gradient(70% 90% at 50% 110%, rgba(76, 29, 149, 0.55), transparent 70%),
       linear-gradient(160deg, #0b0617 0%, #1a0b2e 40%, #2d1b69 100%);
   }
+  /* Editorial portrait — sits in the background layer, never covers content */
+  .hero-portrait {
+    position: absolute;
+    bottom: 0;
+    right: -6%;
+    height: 92%;
+    width: auto;
+    max-width: 55%;
+    object-fit: contain;
+    object-position: bottom right;
+    opacity: 0.18;
+    filter: grayscale(1) contrast(1.05);
+    mix-blend-mode: luminosity;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    mask-image: linear-gradient(to top, black 35%, transparent 96%),
+                linear-gradient(to left, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 35%, transparent 96%),
+                        linear-gradient(to left, black 60%, transparent 100%);
+    mask-composite: intersect;
+    -webkit-mask-composite: source-in;
+  }
+  :global([data-theme='light']) .hero-portrait {
+    opacity: 0.22;
+    mix-blend-mode: multiply;
+  }
+  @media (max-width: 1023px) {
+    .hero-portrait {
+      height: 55%;
+      max-width: 75%;
+      opacity: 0.12;
+    }
+  }
+
   /* Light-mode aurora — luminous off-white with violet wash */
   :global([data-theme='light']) .hero-bg {
     background:

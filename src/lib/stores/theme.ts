@@ -5,8 +5,8 @@ export type Theme = 'dark' | 'light';
 
 const KEY = 'gd:theme';
 const initial: Theme = browser
-  ? ((localStorage.getItem(KEY) as Theme) ?? 'dark')
-  : 'dark';
+  ? ((localStorage.getItem(KEY) as Theme) ?? 'light')
+  : 'light';
 
 export const theme = writable<Theme>(initial);
 
