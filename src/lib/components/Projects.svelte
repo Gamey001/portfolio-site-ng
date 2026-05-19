@@ -75,7 +75,8 @@
                   <p class="mt-1 text-sm text-[var(--bone-2)]">{project.tagline}</p>
                 </div>
                 <span
-                  class="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-white/15 transition-transform group-hover:rotate-45"
+                  class="grid h-12 w-12 shrink-0 place-items-center rounded-full border transition-transform group-hover:rotate-45"
+                  style="border-color: var(--line);"
                   aria-hidden="true"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
@@ -88,7 +89,10 @@
 
               <ul class="mt-6 flex flex-wrap gap-1.5">
                 {#each project.stack as tech}
-                  <li class="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-[var(--bone-2)]">
+                  <li
+                    class="rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-[var(--bone-2)]"
+                    style="border-color: var(--line);"
+                  >
                     {tech}
                   </li>
                 {/each}
@@ -114,7 +118,7 @@
                     target="_blank"
                     rel="noopener"
                     data-cursor="link"
-                    class="inline-flex items-center gap-1.5 text-sm text-[var(--bone-2)] hover:text-bone"
+                    class="inline-flex items-center gap-1.5 text-sm text-[var(--bone-2)] hover:text-[var(--bone)]"
                   >
                     Repo
                   </a>

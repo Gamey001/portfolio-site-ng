@@ -40,7 +40,7 @@
             <a
               href="mailto:{profile.email}"
               data-cursor="link"
-              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-bone"
+              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-[var(--bone)]"
             >
               <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--muted)]">Email</span>
               <span class="underline-offset-4 group-hover:underline">{profile.email}</span>
@@ -50,7 +50,7 @@
             <a
               href="tel:+2348068377631"
               data-cursor="link"
-              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-bone"
+              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-[var(--bone)]"
             >
               <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--muted)]">Phone</span>
               <span class="underline-offset-4 group-hover:underline">{profile.phone}</span>
@@ -62,7 +62,7 @@
               target="_blank"
               rel="noopener"
               data-cursor="link"
-              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-bone"
+              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-[var(--bone)]"
             >
               <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--muted)]">GitHub</span>
               <span class="underline-offset-4 group-hover:underline">@Gamey001</span>
@@ -74,7 +74,7 @@
               target="_blank"
               rel="noopener"
               data-cursor="link"
-              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-bone"
+              class="group flex items-center gap-3 text-[var(--bone-2)] hover:text-[var(--bone)]"
             >
               <span class="font-mono text-xs uppercase tracking-[0.2em] text-[var(--muted)]">LinkedIn</span>
               <span class="underline-offset-4 group-hover:underline">in/gamaliel-dashua</span>
@@ -88,7 +88,8 @@
       <Reveal delay={0.1}>
         <form
           on:submit={handleSubmit}
-          class="rounded-3xl border border-white/10 bg-white/[0.02] p-6 sm:p-8"
+          class="rounded-3xl border p-6 sm:p-8"
+          style="border-color: var(--line); background: var(--surface-2);"
           novalidate
         >
           <div class="space-y-5">
@@ -102,7 +103,8 @@
                 maxlength="80"
                 required
                 aria-invalid={touched.name && !!errors.name}
-                class="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                class="w-full rounded-xl border px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                style="background: var(--field-bg); border-color: var(--field-border); color: var(--bone);"
               />
               {#if touched.name && errors.name}
                 <p class="mt-2 text-xs text-[var(--accent)]" role="alert">{errors.name}</p>
@@ -119,7 +121,8 @@
                 maxlength="120"
                 required
                 aria-invalid={touched.email && !!errors.email}
-                class="w-full rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                class="w-full rounded-xl border px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                style="background: var(--field-bg); border-color: var(--field-border); color: var(--bone);"
               />
               {#if touched.email && errors.email}
                 <p class="mt-2 text-xs text-[var(--accent)]" role="alert">{errors.email}</p>
@@ -135,7 +138,8 @@
                 maxlength="2000"
                 required
                 aria-invalid={touched.message && !!errors.message}
-                class="w-full resize-none rounded-xl border border-white/15 bg-black/30 px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                class="w-full resize-none rounded-xl border px-4 py-3 outline-none transition-colors focus:border-[var(--accent)]"
+                style="background: var(--field-bg); border-color: var(--field-border); color: var(--bone);"
               ></textarea>
               {#if touched.message && errors.message}
                 <p class="mt-2 text-xs text-[var(--accent)]" role="alert">{errors.message}</p>

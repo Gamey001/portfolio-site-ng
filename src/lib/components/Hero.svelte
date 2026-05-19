@@ -1,114 +1,241 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { prefersReducedMotion } from '$lib/stores/motion';
+  import { theme } from '$lib/stores/theme';
+  import type * as THREE_TYPES from 'three';
 
   let heroRoot: HTMLElement;
-  let portraitCanvas: HTMLCanvasElement;
+  let sceneHost: HTMLDivElement;
   let mounted = false;
 
   onMount(() => {
     mounted = true;
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = '/images/gamaliel-cutout.png';
 
-    let raf = 0;
-    const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 };
+    let cleanup: (() => void) | null = null;
 
-    const onMove = (e: PointerEvent) => {
-      const r = heroRoot.getBoundingClientRect();
-      mouse.tx = (e.clientX - r.left) / r.width;
-      mouse.ty = (e.clientY - r.top) / r.height;
-    };
+    (async () => {
+      const THREE: typeof THREE_TYPES = await import('three');
 
-    img.onload = () => {
-      const ctx = portraitCanvas.getContext('2d');
-      if (!ctx) return;
+      const width = () => sceneHost.clientWidth;
+      const height = () => sceneHost.clientHeight;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const sizeCanvas = () => {
-        const rect = portraitCanvas.getBoundingClientRect();
-        portraitCanvas.width = rect.width * dpr;
-        portraitCanvas.height = rect.height * dpr;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, width() / height(), 0.1, 100);
+      camera.position.set(0, 0, 7);
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: 'high-performance'
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(width(), height());
+      renderer.setClearColor(0x000000, 0);
+      sceneHost.appendChild(renderer.domElement);
+
+      // Lighting
+      const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+      scene.add(ambient);
+      const key = new THREE.DirectionalLight(0xffffff, 1.1);
+      key.position.set(4, 5, 6);
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0xa78bfa, 0.9);
+      rim.position.set(-6, -2, 2);
+      scene.add(rim);
+      const accent = new THREE.PointLight(0x7c5cff, 1.2, 18);
+      accent.position.set(-2, 2, 4);
+      scene.add(accent);
+
+      // Materials
+      const accentMat = new THREE.MeshPhysicalMaterial({
+        color: 0x7c5cff,
+        roughness: 0.18,
+        metalness: 0.35,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.15,
+        sheen: 0.6,
+        sheenColor: 0xc4b5fd
+      });
+      const ivoryMat = new THREE.MeshPhysicalMaterial({
+        color: 0xf4f1ea,
+        roughness: 0.32,
+        metalness: 0.05,
+        clearcoat: 0.85
+      });
+      const violetMat = new THREE.MeshPhysicalMaterial({
+        color: 0xc4b5fd,
+        roughness: 0.22,
+        metalness: 0.4,
+        clearcoat: 1.0
+      });
+      const wireMat = new THREE.MeshBasicMaterial({
+        color: 0xddd6fe,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.32
+      });
+
+      type Drift = {
+        mesh: THREE_TYPES.Object3D;
+        spin: THREE_TYPES.Vector3;
+        float: THREE_TYPES.Vector3;
+        base: THREE_TYPES.Vector3;
       };
-      sizeCanvas();
-      window.addEventListener('resize', sizeCanvas);
+      const drifts: Drift[] = [];
 
+      // Lead form — icosahedron (hero shape)
+      const icoGeo = new THREE.IcosahedronGeometry(1.3, 0);
+      const ico = new THREE.Mesh(icoGeo, accentMat);
+      ico.position.set(0.2, 0.1, 0);
+      scene.add(ico);
+      drifts.push({
+        mesh: ico,
+        spin: new THREE.Vector3(0.12, 0.18, 0.05),
+        float: new THREE.Vector3(0.3, 0.35, 0),
+        base: ico.position.clone()
+      });
+
+      // Wireframe shell around the lead form for depth
+      const shellGeo = new THREE.IcosahedronGeometry(1.85, 1);
+      const shell = new THREE.Mesh(shellGeo, wireMat);
+      shell.position.copy(ico.position);
+      scene.add(shell);
+      drifts.push({
+        mesh: shell,
+        spin: new THREE.Vector3(-0.06, -0.09, 0.02),
+        float: new THREE.Vector3(0, 0, 0),
+        base: shell.position.clone()
+      });
+
+      // Torus knot — secondary accent
+      const knotGeo = new THREE.TorusKnotGeometry(0.45, 0.14, 110, 16);
+      const knot = new THREE.Mesh(knotGeo, ivoryMat);
+      knot.position.set(-1.85, -1.1, 0.8);
+      scene.add(knot);
+      drifts.push({
+        mesh: knot,
+        spin: new THREE.Vector3(0.22, 0.28, 0.1),
+        float: new THREE.Vector3(0.22, 0.18, 0),
+        base: knot.position.clone()
+      });
+
+      // Floating sphere — small highlight
+      const sphereGeo = new THREE.SphereGeometry(0.32, 32, 32);
+      const sphere = new THREE.Mesh(sphereGeo, violetMat);
+      sphere.position.set(1.75, 1.4, 0.6);
+      scene.add(sphere);
+      drifts.push({
+        mesh: sphere,
+        spin: new THREE.Vector3(0, 0.3, 0),
+        float: new THREE.Vector3(0.2, 0.3, 0),
+        base: sphere.position.clone()
+      });
+
+      // Soft capsule — adds layout balance
+      const capGeo = new THREE.CapsuleGeometry(0.18, 0.7, 8, 16);
+      const cap = new THREE.Mesh(capGeo, ivoryMat);
+      cap.position.set(1.7, -1.3, 0.4);
+      cap.rotation.z = Math.PI / 4;
+      scene.add(cap);
+      drifts.push({
+        mesh: cap,
+        spin: new THREE.Vector3(0.05, 0.12, 0.2),
+        float: new THREE.Vector3(0.15, 0.2, 0),
+        base: cap.position.clone()
+      });
+
+      const target = { x: 0, y: 0 };
+      const eased = { x: 0, y: 0 };
+      const onMove = (e: PointerEvent) => {
+        const r = heroRoot.getBoundingClientRect();
+        target.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        target.y = -((e.clientY - r.top) / r.height - 0.5) * 2;
+      };
+
+      const onResize = () => {
+        const w = width();
+        const h = height();
+        if (w === 0 || h === 0) return;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      };
+      window.addEventListener('resize', onResize);
+      window.addEventListener('pointermove', onMove, { passive: true });
+
+      const start = performance.now();
+      let raf = 0;
       const draw = () => {
-        // ease toward target
-        mouse.x += (mouse.tx - mouse.x) * 0.08;
-        mouse.y += (mouse.ty - mouse.y) * 0.08;
+        const t = (performance.now() - start) / 1000;
 
-        const w = portraitCanvas.width;
-        const h = portraitCanvas.height;
-        ctx.clearRect(0, 0, w, h);
+        eased.x += (target.x - eased.x) * 0.06;
+        eased.y += (target.y - eased.y) * 0.06;
 
-        // contain-fit the cutout so the full subject is visible
-        const iw = img.width;
-        const ih = img.height;
-        const scale = Math.min(w / iw, h / ih) * 1.05; // slight upscale for presence
-        const dw = iw * scale;
-        const dh = ih * scale;
-        const ox = (w - dw) / 2;
-        const oy = (h - dh) / 2 + h * 0.04; // anchor slightly lower
-
-        // grid slice displacement toward cursor (kept gentle so the subject reads cleanly)
-        const cols = 10;
-        const rows = 14;
-        const dx = (mouse.x - 0.5) * 22 * dpr;
-        const dy = (mouse.y - 0.5) * 22 * dpr;
-
-        const cellW = dw / cols;
-        const cellH = dh / rows;
-        const sCellW = iw / cols;
-        const sCellH = ih / rows;
-
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const cx = (c + 0.5) / cols;
-            const cy = (r + 0.5) / rows;
-            const dist = Math.hypot(cx - mouse.x, cy - mouse.y);
-            const falloff = Math.max(0, 1 - dist * 1.6);
-            const offX = dx * falloff;
-            const offY = dy * falloff;
-            ctx.drawImage(
-              img,
-              c * sCellW,
-              r * sCellH,
-              sCellW,
-              sCellH,
-              ox + c * cellW + offX,
-              oy + r * cellH + offY,
-              cellW + 1,
-              cellH + 1
-            );
-          }
+        for (const d of drifts) {
+          d.mesh.rotation.x += d.spin.x * 0.01;
+          d.mesh.rotation.y += d.spin.y * 0.01;
+          d.mesh.rotation.z += d.spin.z * 0.01;
+          d.mesh.position.x = d.base.x + Math.sin(t * 0.6 + d.base.x) * d.float.x * 0.5 + eased.x * 0.25;
+          d.mesh.position.y = d.base.y + Math.cos(t * 0.5 + d.base.y) * d.float.y * 0.5 + eased.y * 0.18;
         }
 
+        camera.position.x = eased.x * 0.4;
+        camera.position.y = eased.y * 0.3;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
         raf = requestAnimationFrame(draw);
       };
 
-      window.addEventListener('pointermove', onMove, { passive: true });
       if (!$prefersReducedMotion) {
         draw();
       } else {
-        // single static draw — contain-fit for parity with animated path
-        const iw = img.width;
-        const ih = img.height;
-        const scale = Math.min(portraitCanvas.width / iw, portraitCanvas.height / ih);
-        const dw = iw * scale;
-        const dh = ih * scale;
-        ctx.drawImage(img, 0, 0, iw, ih, (portraitCanvas.width - dw) / 2, (portraitCanvas.height - dh) / 2, dw, dh);
+        renderer.render(scene, camera);
       }
-    };
+
+      // React to theme changes — keep tones balanced against the bg
+      const themeUnsub = theme.subscribe((mode) => {
+        if (mode === 'light') {
+          accentMat.color.setHex(0x7c3aed);
+          ivoryMat.color.setHex(0x1f1235);
+          violetMat.color.setHex(0x6d28d9);
+          wireMat.color.setHex(0x4c1d95);
+          wireMat.opacity = 0.28;
+          ambient.intensity = 0.7;
+        } else {
+          accentMat.color.setHex(0x7c5cff);
+          ivoryMat.color.setHex(0xf4f1ea);
+          violetMat.color.setHex(0xc4b5fd);
+          wireMat.color.setHex(0xddd6fe);
+          wireMat.opacity = 0.32;
+          ambient.intensity = 0.55;
+        }
+      });
+
+      cleanup = () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener('resize', onResize);
+        window.removeEventListener('pointermove', onMove);
+        themeUnsub();
+        renderer.dispose();
+        icoGeo.dispose();
+        shellGeo.dispose();
+        knotGeo.dispose();
+        sphereGeo.dispose();
+        capGeo.dispose();
+        accentMat.dispose();
+        ivoryMat.dispose();
+        violetMat.dispose();
+        wireMat.dispose();
+        renderer.domElement.remove();
+      };
+    })();
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('pointermove', onMove);
+      cleanup?.();
     };
   });
 
-  // simple title splitter for staggered reveal
   const title = 'full-stack by craft.';
   const words = title.split(' ');
 </script>
@@ -116,25 +243,14 @@
 <section
   bind:this={heroRoot}
   id="main"
-  class="relative min-h-screen overflow-hidden vignette"
+  class="hero relative min-h-screen overflow-hidden"
   aria-label="Intro"
 >
-  <!-- Modern violet/purple/white mesh gradient background -->
+  <!-- Refined background: aurora mesh + soft grid -->
   <div class="absolute inset-0 z-0" aria-hidden="true">
-    <div
-      class="absolute inset-0"
-      style="background:
-        radial-gradient(70% 90% at 18% 22%, rgba(196,181,253,0.55), transparent 65%),
-        radial-gradient(60% 80% at 82% 78%, rgba(124,58,237,0.55), transparent 60%),
-        radial-gradient(55% 70% at 65% 18%, rgba(255,255,255,0.18), transparent 65%),
-        radial-gradient(80% 100% at 50% 110%, rgba(76,29,149,0.65), transparent 70%),
-        linear-gradient(160deg, #1a0b2e 0%, #2d1b69 45%, #4c1d95 100%);"
-    ></div>
-    <!-- Faint vertical rule grid to add structure without noise -->
-    <div
-      class="absolute inset-0 opacity-[0.05]"
-      style="background-image: linear-gradient(to right, #fff 1px, transparent 1px); background-size: 8.333% 100%;"
-    ></div>
+    <div class="hero-bg absolute inset-0"></div>
+    <div class="hero-grid absolute inset-0"></div>
+    <div class="hero-vignette absolute inset-0"></div>
   </div>
 
   <!-- Foreground content grid -->
@@ -149,7 +265,7 @@
         Gamaliel Dashua · Full-Stack Developer · Nigeria
       </p>
 
-      <h1 class="h-display text-[clamp(3.4rem,9vw,8.5rem)]">
+      <h1 class="h-display hero-title text-[clamp(3.4rem,9vw,8.5rem)]">
         {#each words as word, wi}
           <span class="mr-[0.18em] inline-block overflow-hidden align-top">
             <span
@@ -166,10 +282,10 @@
       </h1>
 
       <p
-        class="mt-8 max-w-xl text-base text-[var(--bone-2)] sm:text-lg"
+        class="hero-lede mt-8 max-w-xl text-base sm:text-lg"
         style="animation: fadeUp 1s 0.55s cubic-bezier(0.22,1,0.36,1) both;"
       >
-        I'm <span class="text-bone">Gamaliel</span> — a full-stack developer with 4+
+        I'm <span class="hero-name">Gamaliel</span> — a full-stack developer with 4+
         years shipping production software. React &amp; TypeScript on the front,
         Java/Spring Boot, Node, and Python on the back. I design APIs, sweat the
         pixels, and care about every frame, focus state, and byte in between.
@@ -189,9 +305,9 @@
         <a
           class="btn btn--ghost"
           data-cursor="magnet"
-          href="/resume.pdf"
-          download
-          aria-label="Download resume (PDF)"
+          href="/Gamaliel_Dashua_CV.docx"
+          download="Gamaliel_Dashua_CV.docx"
+          aria-label="Download resume (DOCX)"
         >
           Resume
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
@@ -201,58 +317,42 @@
       </div>
     </div>
 
-    <!-- Right column: editorial poster portrait -->
-    <div class="col-span-12 flex items-end justify-center lg:col-span-5">
-      <div class="poster relative aspect-[3/4] w-full max-w-md" data-cursor="magnet">
-        <!-- Color panel (the "paper") with grain + radial sheen -->
-        <div class="poster__paper" aria-hidden="true">
-          <div class="poster__sheen"></div>
-          <div class="poster__grain"></div>
-        </div>
+    <!-- Right column: 3D scene -->
+    <div class="col-span-12 flex items-center justify-center lg:col-span-5">
+      <div class="scene-frame relative aspect-square w-full max-w-md">
+        <!-- Soft glow plate behind the scene -->
+        <div class="scene-glow" aria-hidden="true"></div>
 
-        <!-- Giant monogram behind the subject -->
-        <div class="poster__monogram" aria-hidden="true">G</div>
+        <!-- The actual 3D mount -->
+        <div
+          bind:this={sceneHost}
+          class="scene-host"
+          role="img"
+          aria-label="Floating geometric scene reacting to your cursor"
+        ></div>
 
-        <!-- Diagonal label strip behind subject's shoulder -->
-        <div class="poster__strip" aria-hidden="true">
-          FULL-STACK · DEVELOPER · FULL-STACK · DEVELOPER ·
-        </div>
+        <!-- Editorial badges (no mouse-move prompt) -->
+        <span class="scene-badge scene-badge--top">
+          <span class="scene-badge-dot"></span> AVAILABLE · 2026
+        </span>
+        <span class="scene-badge scene-badge--bottom">
+          ISSUE №01 · BSc CS · NG
+        </span>
 
         <!-- Corner crop marks -->
-        <span class="poster__crop poster__crop--tl" aria-hidden="true"></span>
-        <span class="poster__crop poster__crop--tr" aria-hidden="true"></span>
-        <span class="poster__crop poster__crop--bl" aria-hidden="true"></span>
-        <span class="poster__crop poster__crop--br" aria-hidden="true"></span>
-
-        <!-- Subject -->
-        <canvas
-          bind:this={portraitCanvas}
-          class="portrait-canvas relative z-10 h-full w-full"
-          aria-label="Portrait of Gamaliel Dashua. Moves with your cursor."
-        ></canvas>
-
-        <!-- Floor shadow under subject -->
-        <div class="poster__floor" aria-hidden="true"></div>
-
-        <!-- Editorial badges -->
-        <span class="poster__badge poster__badge--top">
-          <span class="poster__badge-dot"></span> AVAILABLE · 2026
-        </span>
-        <span class="poster__badge poster__badge--right">
-          ISSUE №01 — GAMALIEL DASHUA · BSc CS · NG
-        </span>
-        <span class="poster__badge poster__badge--bottom">
-          MOVE · YOUR · MOUSE
-        </span>
+        <span class="scene-crop scene-crop--tl" aria-hidden="true"></span>
+        <span class="scene-crop scene-crop--tr" aria-hidden="true"></span>
+        <span class="scene-crop scene-crop--bl" aria-hidden="true"></span>
+        <span class="scene-crop scene-crop--br" aria-hidden="true"></span>
       </div>
     </div>
 
     <!-- Bottom strip -->
-    <div class="col-span-12 mt-auto flex items-end justify-between border-t border-white/10 pt-4">
-      <div class="font-mono text-[11px] uppercase tracking-[0.22em] text-white/55">
+    <div class="col-span-12 mt-auto flex items-end justify-between border-t pt-4" style="border-color: var(--hero-rule);">
+      <div class="font-mono text-[11px] uppercase tracking-[0.22em]" style="color: var(--hero-muted);">
         <span class="text-[var(--accent)]">●</span> Open to senior full-stack roles
       </div>
-      <a href="#about" class="font-mono text-[11px] uppercase tracking-[0.22em] text-white/55 hover:text-white" aria-label="Scroll to next section">
+      <a href="#about" class="font-mono text-[11px] uppercase tracking-[0.22em] hover:opacity-100" style="color: var(--hero-muted);" aria-label="Scroll to next section">
         Scroll ↓
       </a>
     </div>
@@ -260,183 +360,163 @@
 </section>
 
 <style>
-  .poster {
-    isolation: isolate;
-    overflow: hidden;
-    border-radius: 18px;
-    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.65),
-      0 0 0 1px rgba(255, 255, 255, 0.06);
+  /* Hero owns its own color tokens so it stays balanced in both themes
+     without depending on the global ink/bone values. */
+  .hero {
+    --hero-fg: #f4f1ea;
+    --hero-fg-soft: rgba(244, 241, 234, 0.78);
+    --hero-muted: rgba(244, 241, 234, 0.55);
+    --hero-rule: rgba(244, 241, 234, 0.16);
+  }
+  :global([data-theme='light']) .hero {
+    --hero-fg: #0a0a16;
+    --hero-fg-soft: rgba(10, 10, 22, 0.78);
+    --hero-muted: rgba(10, 10, 22, 0.58);
+    --hero-rule: rgba(10, 10, 22, 0.16);
   }
 
-  /* Modern violet → purple → white paper, editorial gradient */
-  .poster__paper {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+  /* Modern aurora mesh — dark by default */
+  .hero-bg {
     background:
-      radial-gradient(120% 90% at 15% 0%, #ffffff 0%, #ddd6fe 18%, #a78bfa 42%, #7c3aed 70%, #4c1d95 100%);
+      radial-gradient(60% 70% at 18% 24%, rgba(167, 139, 250, 0.42), transparent 60%),
+      radial-gradient(55% 65% at 82% 78%, rgba(124, 58, 237, 0.5), transparent 60%),
+      radial-gradient(40% 50% at 68% 22%, rgba(25, 230, 160, 0.18), transparent 70%),
+      radial-gradient(70% 90% at 50% 110%, rgba(76, 29, 149, 0.55), transparent 70%),
+      linear-gradient(160deg, #0b0617 0%, #1a0b2e 40%, #2d1b69 100%);
   }
-  .poster__sheen {
-    position: absolute;
-    inset: 0;
+  /* Light-mode aurora — luminous off-white with violet wash */
+  :global([data-theme='light']) .hero-bg {
     background:
-      radial-gradient(60% 50% at 80% 10%, rgba(255, 255, 255, 0.35), transparent 60%),
-      radial-gradient(55% 45% at 10% 95%, rgba(46, 16, 101, 0.45), transparent 60%);
-    mix-blend-mode: overlay;
-  }
-  .poster__grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.35;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      radial-gradient(60% 70% at 18% 24%, rgba(196, 181, 253, 0.55), transparent 60%),
+      radial-gradient(55% 65% at 82% 78%, rgba(167, 139, 250, 0.45), transparent 60%),
+      radial-gradient(40% 50% at 68% 22%, rgba(125, 211, 252, 0.25), transparent 70%),
+      radial-gradient(70% 90% at 50% 110%, rgba(124, 58, 237, 0.22), transparent 70%),
+      linear-gradient(160deg, #f8f5ff 0%, #efe9ff 45%, #e3d7ff 100%);
   }
 
-  /* Giant monogram behind the subject */
-  .poster__monogram {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    font-weight: 700;
-    font-size: clamp(18rem, 30vw, 28rem);
-    line-height: 0.78;
-    color: rgba(255, 255, 255, 0.18);
-    letter-spacing: -0.06em;
-    transform: translateY(-2%);
-    user-select: none;
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, currentColor 1px, transparent 1px),
+      linear-gradient(to bottom, currentColor 1px, transparent 1px);
+    background-size: 80px 80px;
+    color: rgba(255, 255, 255, 0.05);
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 35%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 35%, transparent 80%);
+  }
+  :global([data-theme='light']) .hero-grid {
+    color: rgba(10, 10, 22, 0.06);
+  }
+
+  .hero-vignette {
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
     pointer-events: none;
   }
+  :global([data-theme='light']) .hero-vignette {
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(76, 29, 149, 0.12) 100%);
+  }
 
-  /* Diagonal text strip behind the shoulder */
-  .poster__strip {
+  /* Type contrast — locked to the hero token, not the global */
+  .hero-title {
+    color: var(--hero-fg);
+  }
+  .hero-lede {
+    color: var(--hero-fg-soft);
+  }
+  .hero-name {
+    color: var(--hero-fg);
+    font-weight: 600;
+  }
+
+  /* Scene frame */
+  .scene-frame {
+    isolation: isolate;
+  }
+  .scene-glow {
     position: absolute;
-    z-index: 2;
-    bottom: 14%;
-    left: -10%;
-    right: -10%;
-    transform: rotate(-7deg);
-    background: #0a0a0a;
-    color: #f4f1ea;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.28em;
-    padding: 6px 18px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
+    inset: 8%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(167, 139, 250, 0.55), rgba(124, 58, 237, 0.25) 45%, transparent 70%);
+    filter: blur(28px);
+    z-index: 0;
+  }
+  :global([data-theme='light']) .scene-glow {
+    background: radial-gradient(circle at 35% 35%, rgba(124, 58, 237, 0.35), rgba(167, 139, 250, 0.2) 45%, transparent 70%);
+  }
+  .scene-host {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+  .scene-host :global(canvas) {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
   }
 
-  /* Subject sits on top with a clean grade */
-  .portrait-canvas {
-    z-index: 4;
-    filter: contrast(1.06) brightness(1.02) saturate(1.05)
-      drop-shadow(0 18px 26px rgba(0, 0, 0, 0.55));
-    background: transparent;
-  }
-
-  /* Floor / plinth shadow */
-  .poster__floor {
+  /* Crop marks */
+  .scene-crop {
     position: absolute;
     z-index: 3;
-    left: 18%;
-    right: 18%;
-    bottom: 4%;
-    height: 14px;
-    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7), transparent 70%);
-    filter: blur(8px);
-  }
-
-  /* Corner crop marks for the magazine feel */
-  .poster__crop {
-    position: absolute;
-    z-index: 5;
     width: 18px;
     height: 18px;
-    border-color: rgba(255, 255, 255, 0.85);
     border-style: solid;
     border-width: 0;
+    border-color: var(--hero-fg);
+    opacity: 0.55;
   }
-  .poster__crop--tl {
-    top: 10px;
-    left: 10px;
-    border-top-width: 1.5px;
-    border-left-width: 1.5px;
-  }
-  .poster__crop--tr {
-    top: 10px;
-    right: 10px;
-    border-top-width: 1.5px;
-    border-right-width: 1.5px;
-  }
-  .poster__crop--bl {
-    bottom: 10px;
-    left: 10px;
-    border-bottom-width: 1.5px;
-    border-left-width: 1.5px;
-  }
-  .poster__crop--br {
-    bottom: 10px;
-    right: 10px;
-    border-bottom-width: 1.5px;
-    border-right-width: 1.5px;
-  }
+  .scene-crop--tl { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .scene-crop--tr { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .scene-crop--bl { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .scene-crop--br { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
 
-  /* Editorial badges around the edges */
-  .poster__badge {
+  /* Badges around the scene */
+  .scene-badge {
     position: absolute;
-    z-index: 6;
+    z-index: 4;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 6px 12px;
-    background: rgba(10, 10, 10, 0.78);
-    color: #f4f1ea;
+    border-radius: 999px;
     font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.62rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    backdrop-filter: blur(6px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    background: rgba(10, 6, 23, 0.65);
+    color: #f4f1ea;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     white-space: nowrap;
   }
-  .poster__badge--top {
-    top: 22px;
-    left: 22px;
-    border-radius: 999px;
+  :global([data-theme='light']) .scene-badge {
+    background: rgba(255, 255, 255, 0.78);
+    color: #1a0b2e;
+    border-color: rgba(10, 10, 22, 0.12);
   }
-  .poster__badge--right {
-    top: 50%;
-    right: -10px;
-    transform: rotate(90deg) translateX(-50%);
-    transform-origin: right center;
-    border-radius: 4px;
-  }
-  .poster__badge--bottom {
-    bottom: 22px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 999px;
-  }
-  .poster__badge-dot {
+  .scene-badge--top { top: 14px; left: 14px; }
+  .scene-badge--bottom { bottom: 14px; left: 50%; transform: translateX(-50%); }
+
+  .scene-badge-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: #19e6a0;
     box-shadow: 0 0 8px #19e6a0;
-    animation: dotPulse 1.6s ease-in-out infinite;
+    animation: heroDotPulse 1.6s ease-in-out infinite;
   }
 
-  @keyframes dotPulse {
+  @keyframes heroDotPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.55; transform: scale(0.85); }
   }
 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .poster__badge-dot {
-      animation: none;
-    }
+    .scene-badge-dot { animation: none; }
   }
 </style>

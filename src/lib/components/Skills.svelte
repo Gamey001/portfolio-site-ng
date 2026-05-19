@@ -24,7 +24,8 @@
         {#each skillGroups as group, gi}
           <Reveal delay={0.05 * gi}>
             <details
-              class="group rounded-2xl border border-white/10 bg-white/[0.02] p-5 open:bg-white/[0.04]"
+              class="group rounded-2xl border p-5"
+              style="border-color: var(--line); background: var(--surface-2);"
               open={gi === 0}
             >
               <summary
@@ -39,7 +40,8 @@
               <ul class="mt-5 flex flex-wrap gap-2">
                 {#each group.items as item}
                   <li
-                    class="rounded-full border border-white/10 bg-black/30 px-3.5 py-1.5 text-sm text-[var(--bone-2)] transition-colors hover:border-[var(--accent)] hover:text-bone"
+                    class="rounded-full border px-3.5 py-1.5 text-sm text-[var(--bone-2)] transition-colors hover:border-[var(--accent)] hover:text-[var(--bone)]"
+                    style="border-color: var(--line); background: var(--surface-1);"
                   >
                     {item}
                   </li>

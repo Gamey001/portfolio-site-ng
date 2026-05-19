@@ -12,17 +12,28 @@
   --accent: #ff4d2e;
   --accent-2: #7c5cff;
   --accent-3: #19e6a0;
-  --line: rgba(244, 241, 234, 0.12);
+  --line: rgba(244, 241, 234, 0.14);
+  /* Surfaces & fields — semantic tokens that flip in light mode */
+  --surface-1: rgba(255, 255, 255, 0.04);
+  --surface-2: rgba(255, 255, 255, 0.02);
+  --field-bg: rgba(0, 0, 0, 0.32);
+  --field-border: rgba(255, 255, 255, 0.16);
+  --nav-bg: rgba(10, 6, 23, 0.78);
 }
 
 [data-theme='light'] {
   color-scheme: light;
-  --ink: #f4f1ea;
-  --ink-2: #ebe6da;
-  --bone: #0a0a0a;
-  --bone-2: #1a1a1a;
-  --muted: #50493e;
-  --line: rgba(10, 10, 10, 0.14);
+  --ink: #f5f1ff;
+  --ink-2: #ece5ff;
+  --bone: #0a0a16;
+  --bone-2: #1f1235;
+  --muted: #4a3d6b;
+  --line: rgba(10, 10, 22, 0.16);
+  --surface-1: rgba(10, 10, 22, 0.04);
+  --surface-2: rgba(10, 10, 22, 0.02);
+  --field-bg: rgba(255, 255, 255, 0.7);
+  --field-border: rgba(10, 10, 22, 0.18);
+  --nav-bg: rgba(248, 245, 255, 0.85);
 }
 
 html {
@@ -202,7 +213,7 @@ body {
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
 }
 .project-card:hover {
-  border-color: rgba(244, 241, 234, 0.32);
+  border-color: var(--bone);
 }
 .project-card::before {
   content: '';

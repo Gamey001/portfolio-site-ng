@@ -22,10 +22,9 @@
 
 <header
   class="fixed inset-x-0 top-0 z-50 transition-all duration-500"
-  class:bg-black={scrolled}
   class:backdrop-blur-md={scrolled}
   class:border-b={scrolled}
-  style={scrolled ? 'border-color: var(--line);' : ''}
+  style={scrolled ? 'background: var(--nav-bg); border-color: var(--line);' : ''}
 >
   <nav class="mx-auto flex max-w-[1480px] items-center justify-between px-5 py-4 sm:px-8 lg:px-14">
     <a href="#main" class="flex items-center gap-2" data-cursor="link" aria-label="Home">
@@ -50,7 +49,8 @@
     <div class="flex items-center gap-2">
       <button
         type="button"
-        class="rounded-full border border-white/15 p-2 text-xs"
+        class="rounded-full p-2 text-xs"
+        style="border: 1px solid var(--line);"
         data-cursor="link"
         on:click={toggleTheme}
         aria-label="Toggle color theme"
@@ -71,7 +71,8 @@
 
       <button
         type="button"
-        class="rounded-full border border-white/15 p-2 md:hidden"
+        class="rounded-full p-2 md:hidden"
+        style="border: 1px solid var(--line);"
         on:click={() => (mobileOpen = !mobileOpen)}
         aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
         aria-expanded={mobileOpen}
@@ -89,14 +90,16 @@
 
   {#if mobileOpen}
     <div
-      class="border-t border-white/10 bg-black/95 px-5 pb-6 pt-4 md:hidden"
+      class="border-t px-5 pb-6 pt-4 md:hidden"
+      style="background: var(--nav-bg); backdrop-filter: blur(10px); border-color: var(--line);"
     >
       <ul class="flex flex-col gap-2">
         {#each links as link}
           <li>
             <a
               href={link.href}
-              class="block rounded-xl px-4 py-3 text-base hover:bg-white/5"
+              class="block rounded-xl px-4 py-3 text-base"
+              style="color: var(--bone-2);"
               on:click={() => (mobileOpen = false)}
             >
               {link.label}

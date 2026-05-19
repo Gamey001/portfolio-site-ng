@@ -9,11 +9,14 @@ export default {
         mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
       },
       colors: {
-        ink: '#0a0a0a',
-        bone: '#f4f1ea',
-        accent: '#ff4d2e',
-        accent2: '#7c5cff',
-        accent3: '#19e6a0'
+        ink: 'var(--ink)',
+        'ink-2': 'var(--ink-2)',
+        bone: 'var(--bone)',
+        'bone-2': 'var(--bone-2)',
+        muted: 'var(--muted)',
+        accent: 'var(--accent)',
+        accent2: 'var(--accent-2)',
+        accent3: 'var(--accent-3)'
       },
       animation: {
         'fade-up': 'fadeUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) both',
