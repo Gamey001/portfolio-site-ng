@@ -31,6 +31,10 @@ export const skillGroups: SkillGroup[] = [
     ]
   },
   {
+    heading: 'AI Development',
+    items: ['FastAPI', 'LangChain', 'LangGraph']
+  },
+  {
     heading: 'DevOps & Tooling',
     items: [
       'Git · GitHub · GitLab',

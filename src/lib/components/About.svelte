@@ -31,7 +31,7 @@
         <dl class="mt-10 grid grid-cols-2 gap-y-6 text-sm sm:grid-cols-3">
           <div>
             <dt class="eyebrow mb-2">Education</dt>
-            <dd>BSc · University of Jos</dd>
+            <dd>BSc Computer Science · University of Jos</dd>
           </div>
           <div>
             <dt class="eyebrow mb-2">Based</dt>
