@@ -404,19 +404,24 @@
     width: auto;
     max-width: 50%;
     object-fit: contain;
-    object-position: bottom left;
+    /* anchored bottom-right so that scaleX(-1) flips the figure visually back
+       to the left side of the box — same on-screen position as before, just
+       facing the other way. */
+    object-position: bottom right;
+    transform: scaleX(-1);
     opacity: 0.18;
     filter: grayscale(1) contrast(1.05);
     mix-blend-mode: luminosity;
     pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
-    /* Fade only the very top edge (above the head) so the face stays fully
-       opaque; soften the right edge so it doesn't fight the 3D scene. */
+    /* Fade the top edge above the head; soften what is visually the right
+       edge of the photo. Because the element is mirrored, the pre-transform
+       gradient direction is reversed (to left → fades the visual right). */
     mask-image: linear-gradient(to top, black 90%, transparent 100%),
-                linear-gradient(to right, black 75%, transparent 100%);
+                linear-gradient(to left, black 75%, transparent 100%);
     -webkit-mask-image: linear-gradient(to top, black 90%, transparent 100%),
-                        linear-gradient(to right, black 75%, transparent 100%);
+                        linear-gradient(to left, black 75%, transparent 100%);
     mask-composite: intersect;
     -webkit-mask-composite: source-in;
   }
