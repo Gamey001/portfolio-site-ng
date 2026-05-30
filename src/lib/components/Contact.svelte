@@ -152,10 +152,6 @@
                 <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </button>
-
-            <p class="text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
-              Opens your mail client · No data leaves the browser
-            </p>
           </div>
         </form>
       </Reveal>
